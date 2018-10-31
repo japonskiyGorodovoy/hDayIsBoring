@@ -37,7 +37,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    [self setupQuery];
+    self.session = [AVCaptureSession new];
+    self.videoDataOutput = [AVCaptureVideoDataOutput new];
+    
+    
     // Set the view's delegate
     self.sceneView.delegate = self;
     
@@ -119,13 +123,15 @@
         NSDictionary* videoSettings = [NSDictionary dictionaryWithObject:value forKey:key];
         self.videoDataOutput.videoSettings = videoSettings;
         [self.videoDataOutput setSampleBufferDelegate:self queue:self.videoDataOutputQueue];
-        AVCaptureConnection *captureConnection = [_videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
-        captureConnection.enabled = true;
-        [videoDevice lockForConfiguration:nil];
-        CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions([[videoDevice activeFormat] formatDescription]);
-        self.bufferSize = CGSizeMake(dimensions.width, dimensions.height);
-        [videoDevice unlockForConfiguration];
     }
+    AVCaptureConnection *captureConnection = [self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
+    captureConnection.enabled = true;
+
+    [videoDevice lockForConfiguration:nil];
+    CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions([[videoDevice activeFormat] formatDescription]);
+    self.bufferSize = CGSizeMake(dimensions.width, dimensions.height);
+    [videoDevice unlockForConfiguration];
+    
     [self.session commitConfiguration];
     self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
     self.previewLayer.videoGravity = kCAGravityResizeAspectFill;
@@ -157,7 +163,7 @@
 
 - (void)drawVisionRequestResults:(NSArray*)results {
     [CATransaction begin];
-    [CATransaction setValue:kCFBooleanTrue forKey:kCATransactionDisableActions];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
     self.detectionOverlay.sublayers = nil;
     for (VNRecognizedObjectObservation *observation in results) {
         VNClassificationObservation *topLabelObservation = observation.labels[0];
@@ -172,6 +178,7 @@
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output didDropSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+    
     CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CGImagePropertyOrientation exifOrientation = [self exifOrientationFromDeviceOrientation];
     VNImageRequestHandler *imageRequestHandler = [[VNImageRequestHandler alloc] initWithCVPixelBuffer:pixelBuffer orientation:exifOrientation options:@{}];
@@ -269,10 +276,10 @@
             exifOrientation = kCGImagePropertyOrientationDown;
             break;
         case UIDeviceOrientationPortrait:
-            exifOrientation = kCGImagePropertyOrientationUp;
+            exifOrientation = kCGImagePropertyOrientationRightMirrored;
             break;
         default:
-            exifOrientation = kCGImagePropertyOrientationUp;
+            exifOrientation = kCGImagePropertyOrientationRightMirrored;
             break;
     }
     return exifOrientation;
