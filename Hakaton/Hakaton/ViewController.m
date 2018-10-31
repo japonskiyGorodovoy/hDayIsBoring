@@ -12,6 +12,13 @@
 
 @property (nonatomic, strong) IBOutlet ARSCNView *sceneView;
 
+@property (nonatomic, assign) CGSize *bufferSize;
+@property (nonatomic, strong) CALayer *rootLayer;
+@property (nonatomic, strong) AVCaptureSession *session;
+@property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
+@property (nonatomic, strong) AVCaptureVideoDataOutput *videoDataOutput;
+@property (nonatomic, strong) NSOperationQueue *videoDataOutputQueue;
+
 @end
 
     
@@ -48,6 +55,15 @@
     
     // Pause the view's session
     [self.sceneView.session pause];
+}
+
+- (void)setupQuery {
+    self.videoDataOutputQueue = [[NSOperationQueue alloc] init];
+}
+
+- (void)setupAVCapture {
+    AVCaptureDeviceInput *deviceInput;
+    AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack];
 }
 
 #pragma mark - ARSCNViewDelegate
