@@ -10,7 +10,7 @@
 #import <Vision/Vision.h>
 #import <CoreML/CoreML.h>
 #import "ObjectDetector.h"
-
+#import <CoreLocation/CoreLocation.h>
 
 @interface ViewController () <ARSCNViewDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, ARSessionDelegate>
 
@@ -268,10 +268,23 @@
         SCNVector3 worldCoord = SCNVector3Make(transform.columns[3].x, transform.columns[3].y, transform.columns[3].z);
         
         // Create 3D Text
-        SCNNode *node = [self createNewBubbleParentNode:latestPrediction];
-        [sceneView.scene.rootNode addChildNode:node];
+        SCNNode *node = [self createNewBubbleParentNode:self.latestPrediction];
+        [self.sceneView.scene.rootNode addChildNode:node];
         node.position = worldCoord;
     }
+}
+
+#pragma mark - Maps
+
+- (void)showMapsWithLatitude:(double)latitude longitude:(double)longitude {
+    NSString *URLString = [NSString stringWithFormat:@"http://maps.apple.com/?daddr=%f,%f&dirflg=d", latitude, longitude];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:URLString] options:@{} completionHandler:^(BOOL success) {
+        
+    }];
+}
+
+- (void)showMapsWithTestCoordinates {
+    [self showMapsWithLatitude:55.744783 longitude:37.565995];
 }
 
 @end
