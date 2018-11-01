@@ -29,6 +29,9 @@
 @property (nonatomic, strong) CALayer *detectionOverlay;
 
 @property (nonatomic, assign) int frameCounter;
+@property (nonatomic, assign) CGFloat bubbleDepth; // the 'depth' of 3D text
+@property (nonatomic, copy) NSString *latestPrediction;// a variable containing the latest CoreML prediction
+@property (nonatomic, assign) CGPoint point;
 
 @end
 
@@ -42,7 +45,9 @@
 //    self.session = [AVCaptureSession new];
 //    self.videoDataOutput = [AVCaptureVideoDataOutput new];
     
-    
+    self.bubbleDepth = 0.01;
+    self.latestPrediction = @"…";
+    self.point = CGPointZero;
     // Set the view's delegate
     self.sceneView.delegate = self;
     
@@ -338,6 +343,25 @@
     [imageRequestHandler performRequests:self.requests error:nil];
     
     NSLog(@"pixelBufferFromFrame");
+}
+
+
+- (void)classificationCompleteHandler:(VNRequest *)request {
+    
+    VNRecognizedObjectObservation *result = request.results.firstObject;
+    NSString *str = [result.labels.firstObject identifier];
+    
+    if (str != nil) {
+       
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CGFloat sst = MIN([UIScreen mainScreen].bounds.size.width,  [UIScreen mainScreen].bounds.size.height);
+            CGFloat ssv = MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+            CGRect objectBounds = VNImageRectForNormalizedRect(result.boundingBox, sst, ssv);
+            objectBounds.origin.y += fabs(sst-ssv);
+            self.point = CGPointMake(objectBounds.origin.x + (objectBounds.size.width / 2.0), objectBounds.origin.y + (objectBounds.size.height / 2.0));
+            self.latestPrediction = str;
+        });
+    }
 }
 
 @end

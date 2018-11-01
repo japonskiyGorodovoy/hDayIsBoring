@@ -18,12 +18,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
     let bubbleDepth : Float = 0.01 // the 'depth' of 3D text
     var latestPrediction : String = "…" // a variable containing the latest CoreML prediction
+    var point = CGPoint.zero
     
     // COREML
     var visionRequests = [VNRequest]()
     let dispatchQueueML = DispatchQueue(label: "com.hw.dispatchqueueml") // A Serial Queue
     @IBOutlet weak var debugTextView: UITextView!
-    var point = CGPoint.zero
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -215,7 +215,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Get Classifications
         if observations.count >= 2 {
             let classifications = observations[0...1] // top 2 results
-                .flatMap({ $0 as? VNClassificationObservation })
+                .compactMap({ $0 as? VNClassificationObservation })
                 .map({ "\($0.identifier) \(String(format:"- %.2f", $0.confidence))" })
                 .joined(separator: "\n")
             
