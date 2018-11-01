@@ -28,7 +28,7 @@
 @property (nonatomic, strong) NSArray<VNRequest*> *requests;
 @property (nonatomic, strong) CALayer *detectionOverlay;
 
-
+@property (nonatomic, assign) int frameCounter;
 
 @end
 
@@ -38,6 +38,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupQuery];
+    
 //    self.session = [AVCaptureSession new];
 //    self.videoDataOutput = [AVCaptureVideoDataOutput new];
     
@@ -321,10 +322,22 @@
 
 
 - (void)session:(ARSession *)session didUpdateFrame:(ARFrame *)frame {
+    
+    if (self.frameCounter == 60 || self.frameCounter == 0) {
+        [self pixelBufferFromFrame:frame];
+        self.frameCounter = 1;
+    } else {
+        self.frameCounter++;
+    }
+}
+
+- (void)pixelBufferFromFrame:(ARFrame *)frame {
     CVImageBufferRef pixelBuffer = frame.capturedImage;
     CGImagePropertyOrientation exifOrientation = [self exifOrientationFromDeviceOrientation];
     VNImageRequestHandler *imageRequestHandler = [[VNImageRequestHandler alloc] initWithCVPixelBuffer:pixelBuffer orientation:exifOrientation options:@{}];
     [imageRequestHandler performRequests:self.requests error:nil];
+    
+    NSLog(@"pixelBufferFromFrame");
 }
 
 @end
