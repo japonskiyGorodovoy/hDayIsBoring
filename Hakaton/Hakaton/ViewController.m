@@ -317,6 +317,15 @@
     [self showMapsWithLatitude:55.744783 longitude:37.565995];
 }
 
+- (void)showMapsWithSearchString:(NSString *)searchString {
+    NSString *URLString = [NSString stringWithFormat:@"http://maps.apple.com/?q=%@", [searchString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+    [self openURLString:URLString];
+}
+
+- (void)showMapsWithSearchString {
+    [self showMapsWithSearchString:@"re store"];
+}
+
 #pragma mark - Safari
 
 - (void)showSafariWithSearchString:(NSString *)searchString {
