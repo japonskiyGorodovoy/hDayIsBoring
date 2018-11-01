@@ -32,6 +32,8 @@
 @property (nonatomic, copy) NSString *latestPrediction;// a variable containing the latest CoreML prediction
 @property (nonatomic, assign) CGPoint point;
 
+@property (nonatomic, strong) NSMutableDictionary *container;
+
 @end
 
     
@@ -40,7 +42,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupQuery];
-    
+    self.container = [NSMutableDictionary dictionary];
 //    self.session = [AVCaptureSession new];
 //    self.videoDataOutput = [AVCaptureVideoDataOutput new];
     
@@ -52,12 +54,6 @@
     
     // Show statistics such as fps and timing information
     self.sceneView.showsStatistics = YES;
-    
-    // Create a new scene
-    SCNScene *scene = [SCNScene sceneNamed:@"art.scnassets/ship.scn"];
-    
-    // Set the scene to the view
-    self.sceneView.scene = scene;
    [self setupVision];
 }
 
@@ -106,11 +102,30 @@
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
     self.detectionOverlay.sublayers = nil;
     for (VNRecognizedObjectObservation *observation in results) {
-        CGSize screenSize = [[UIScreen mainScreen] bounds].size;
         
-        CGRect objectBounds = VNImageRectForNormalizedRect(observation.boundingBox, screenSize.width, screenSize.height);
-    
-        NSLog(@"%@",NSStringFromCGRect(objectBounds));
+        
+            self.latestPrediction = [[[observation labels] firstObject] identifier];
+        if (![self.container objectForKey:self.latestPrediction]) {
+            [self.container setObject:observation.uuid forKey:self.latestPrediction];
+            CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+            
+            CGFloat scalefactor = MAX(screenSize.height/self.bufferSize.height, screenSize.width/self.bufferSize.width);
+            
+            CGFloat yOffset = ((self.bufferSize.height * scalefactor) - screenSize.height) / 2.0;
+            CGFloat xOffset = ((self.bufferSize.width * scalefactor) - screenSize.width) / 2.0f;
+            
+            CGRect objectBounds = VNImageRectForNormalizedRect(observation.boundingBox, self.bufferSize.width*scalefactor, self.bufferSize.height*scalefactor);
+            
+            objectBounds.origin.x -= xOffset;
+            objectBounds.origin.y -= yOffset;
+            
+            
+            self.point = CGPointMake(objectBounds.origin.x + objectBounds.size.width /2.0f, objectBounds.origin.y + objectBounds.size.height / 2.0);
+            
+            [self handleTapGestureRecognize:nil];
+        } else {
+            
+        }
     }
     [CATransaction commit];
 }
@@ -154,6 +169,9 @@
 
 - (void)pixelBufferFromFrame:(ARFrame *)frame {
     CVImageBufferRef pixelBuffer = frame.capturedImage;
+    size_t width = CVPixelBufferGetWidth(pixelBuffer);
+    size_t height = CVPixelBufferGetHeight(pixelBuffer);
+    self.bufferSize = CGSizeMake(width, height);
     CGImagePropertyOrientation exifOrientation = [self exifOrientationFromDeviceOrientation];
     VNImageRequestHandler *imageRequestHandler = [[VNImageRequestHandler alloc] initWithCVPixelBuffer:pixelBuffer orientation:exifOrientation options:@{}];
     [imageRequestHandler performRequests:self.requests error:nil];
@@ -193,6 +211,9 @@
     ///////////////////////////
     // Get Camera Image as RGB
     CVPixelBufferRef pixbuff = self.sceneView.session.currentFrame.capturedImage;
+    size_t width = CVPixelBufferGetWidth(pixbuff);
+    size_t height = CVPixelBufferGetHeight(pixbuff);
+    self.bufferSize = CGSizeMake(width, height);
     
     if (pixbuff == nil) { return; }
     CIImage *ciImage = [[CIImage alloc] initWithCVPixelBuffer:pixbuff];
@@ -256,7 +277,6 @@
     
     return bubbleNodeParent;
 }
-
 
 - (void)handleTapGestureRecognize:(UITapGestureRecognizer *)gestureRecognize {
     // HIT TEST : REAL WORLD
