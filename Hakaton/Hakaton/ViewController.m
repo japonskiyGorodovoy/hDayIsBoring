@@ -16,7 +16,7 @@
 
 @property (nonatomic, strong) IBOutlet ARSCNView *sceneView;
 
-@property (nonatomic, strong) IBOutlet UIView *previewView;
+@property (nonatomic, strong) IBOutlet UIImageView *previewView;
 
 @property (nonatomic, assign) CGSize bufferSize;
 @property (nonatomic, strong) CALayer *rootLayer;
@@ -318,6 +318,7 @@
         [self.sceneView.scene.rootNode addChildNode:node];
         node.position = worldCoord;
         [self.container setObject:node forKey:identifer];
+        [self.previewView setHidden:YES];
         [node addChildNode:[self panelWith:identifer]];
     }
 }
@@ -361,9 +362,9 @@
     SCNBox *box = [SCNBox boxWithWidth:0.2 height:0.2 length:0.0005 chamferRadius:0];
     
     if ([str isEqualToString:@"MacBook"]) {
-        box = [SCNBox boxWithWidth:0.22 height:0.2 length:0.0005 chamferRadius:0];
+        box = [SCNBox boxWithWidth:0.2 height:0.2*410.0/363.0 length:0.0005 chamferRadius:0];
     } else if ([str isEqualToString:@"METRO"]) {
-        box = [SCNBox boxWithWidth:0.2 height:0.12 length:0.0005 chamferRadius:0];
+        box = [SCNBox boxWithWidth:0.2 height:0.2 length:0.0005 chamferRadius:0];
     }
     
     box.materials =  @[greenMaterial,  redMaterial,    blueMaterial,
@@ -381,6 +382,7 @@
         [obj removeFromParentNode];
     }];
     [self.container removeAllObjects];
+    [self.previewView setHidden:NO];
 }
 
 @end

@@ -22,9 +22,9 @@
 		B2D2A923218B84B1002CA70E /* cardMacbook.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D2A922218B84B1002CA70E /* cardMacbook.png */; };
 		B2D2A925218B84BE002CA70E /* cardMacbook@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D2A924218B84BE002CA70E /* cardMacbook@2x.png */; };
 		B2D2A927218B84C4002CA70E /* cardMacbook@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D2A926218B84C4002CA70E /* cardMacbook@3x.png */; };
-		B2D2A931218B8891002CA70E /* cardMetro@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D2A92E218B8891002CA70E /* cardMetro@3x.png */; };
-		B2D2A932218B8891002CA70E /* cardMetro.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D2A92F218B8891002CA70E /* cardMetro.png */; };
-		B2D2A933218B8891002CA70E /* cardMetro@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D2A930218B8891002CA70E /* cardMetro@2x.png */; };
+		B2D2A937218B8ABF002CA70E /* cardMetro@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D2A934218B8ABF002CA70E /* cardMetro@3x.png */; };
+		B2D2A938218B8ABF002CA70E /* cardMetro.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D2A935218B8ABF002CA70E /* cardMetro.png */; };
+		B2D2A939218B8ABF002CA70E /* cardMetro@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D2A936218B8ABF002CA70E /* cardMetro@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,9 +47,9 @@
 		B2D2A922218B84B1002CA70E /* cardMacbook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cardMacbook.png; sourceTree = "<group>"; };
 		B2D2A924218B84BE002CA70E /* cardMacbook@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cardMacbook@2x.png"; sourceTree = "<group>"; };
 		B2D2A926218B84C4002CA70E /* cardMacbook@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cardMacbook@3x.png"; sourceTree = "<group>"; };
-		B2D2A92E218B8891002CA70E /* cardMetro@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cardMetro@3x.png"; sourceTree = "<group>"; };
-		B2D2A92F218B8891002CA70E /* cardMetro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cardMetro.png; sourceTree = "<group>"; };
-		B2D2A930218B8891002CA70E /* cardMetro@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cardMetro@2x.png"; sourceTree = "<group>"; };
+		B2D2A934218B8ABF002CA70E /* cardMetro@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cardMetro@3x.png"; sourceTree = "<group>"; };
+		B2D2A935218B8ABF002CA70E /* cardMetro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cardMetro.png; sourceTree = "<group>"; };
+		B2D2A936218B8ABF002CA70E /* cardMetro@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cardMetro@2x.png"; sourceTree = "<group>"; };
 		DA7BA0DF4B1DBF5D7CF487E1 /* Pods-Hakaton.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hakaton.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Hakaton/Pods-Hakaton.debug.xcconfig"; sourceTree = "<group>"; };
 		E0136CFD557251B3E3546524 /* Pods-Hakaton.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hakaton.release.xcconfig"; path = "Pods/Target Support Files/Pods-Hakaton/Pods-Hakaton.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,9 +86,9 @@
 		B293EEAE2189C3E800318563 = {
 			isa = PBXGroup;
 			children = (
-				B2D2A92F218B8891002CA70E /* cardMetro.png */,
-				B2D2A930218B8891002CA70E /* cardMetro@2x.png */,
-				B2D2A92E218B8891002CA70E /* cardMetro@3x.png */,
+				B2D2A935218B8ABF002CA70E /* cardMetro.png */,
+				B2D2A936218B8ABF002CA70E /* cardMetro@2x.png */,
+				B2D2A934218B8ABF002CA70E /* cardMetro@3x.png */,
 				784DBAB5218B3AF000AFFCC4 /* ObjectDetector.mlmodel */,
 				B2D2A922218B84B1002CA70E /* cardMacbook.png */,
 				B2D2A924218B84BE002CA70E /* cardMacbook@2x.png */,
@@ -187,18 +187,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				B2D2A923218B84B1002CA70E /* cardMacbook.png in Resources */,
-				B2D2A932218B8891002CA70E /* cardMetro.png in Resources */,
 				B293EEBE2189C3E800318563 /* art.scnassets in Resources */,
 				B293EEC92189C3EB00318563 /* LaunchScreen.storyboard in Resources */,
 				784DBABB218B720900AFFCC4 /* card@2x.png in Resources */,
+				B2D2A937218B8ABF002CA70E /* cardMetro@3x.png in Resources */,
+				B2D2A938218B8ABF002CA70E /* cardMetro.png in Resources */,
 				B293EEC62189C3EB00318563 /* Assets.xcassets in Resources */,
 				B2D2A925218B84BE002CA70E /* cardMacbook@2x.png in Resources */,
 				B2D2A927218B84C4002CA70E /* cardMacbook@3x.png in Resources */,
-				B2D2A931218B8891002CA70E /* cardMetro@3x.png in Resources */,
 				784DBABA218B720900AFFCC4 /* card@3x.png in Resources */,
 				B293EEC42189C3E800318563 /* Main.storyboard in Resources */,
-				B2D2A933218B8891002CA70E /* cardMetro@2x.png in Resources */,
 				784DBABC218B720900AFFCC4 /* card.png in Resources */,
+				B2D2A939218B8ABF002CA70E /* cardMetro@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
