@@ -14,7 +14,7 @@
 @end
 
 @implementation AppDelegate
-
+//richard.b.riddick.1024@gmail.com
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
