@@ -33,6 +33,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *container;
 
+@property (nonatomic, strong) UITapGestureRecognizer *tapRecognizer;
+
 
 
 @end
@@ -42,6 +44,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapRecognizer:)];
+    [[self view] addGestureRecognizer:self.tapRecognizer];
     [self setupQuery];
     self.container = [NSMutableDictionary dictionary];
 //    self.session = [AVCaptureSession new];
@@ -54,6 +58,28 @@
     // Show statistics such as fps and timing information
     self.sceneView.showsStatistics = YES;
    [self setupVision];
+}
+
+- (void)tapRecognizer:(UITapGestureRecognizer*)rec {
+    CGPoint point = [rec locationInView:self.sceneView];
+    NSArray <SCNHitTestResult *> *arHitTestResults = [self.sceneView hitTest:point options:nil];
+    
+    for (SCNHitTestResult *closestResult in arHitTestResults) {
+        
+        if ([[self.container allValues] containsObject:closestResult.node.parentNode]) {
+            if ([[[self.container allKeysForObject:closestResult.node.parentNode] firstObject] isEqualToString:@"MacBook"]) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://beru.ru/product/100457809134?show-uid=15410979292383716248316001"] options:@{} completionHandler:^(BOOL success) {
+                    
+                }];
+            } else {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://s-drugom.com/action/view?id=1694"] options:@{} completionHandler:^(BOOL success) {
+                    
+                }];
+                
+            }
+        }
+    }
+ 
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -252,8 +278,8 @@
     
     // BUBBLE PARENT NODE
     SCNNode *bubbleNodeParent = [SCNNode node];
-    [bubbleNodeParent addChildNode:bubbleNode];
-    [bubbleNodeParent addChildNode:sphereNode];
+//    [bubbleNodeParent addChildNode:bubbleNode];
+//    [bubbleNodeParent addChildNode:sphereNode];
     bubbleNodeParent.constraints = @[billboardConstraint];
     
     
@@ -269,7 +295,7 @@
 //    planeNode.position = SCNVector3Make(0, 0.1, 0);
 //    planeNode.geometry = plane;
     
-    [bubbleNodeParent addChildNode:[self panel]];
+    [bubbleNodeParent addChildNode:[self panelWith:text]];
     
     return bubbleNodeParent;
 }
@@ -292,12 +318,20 @@
         [self.sceneView.scene.rootNode addChildNode:node];
         node.position = worldCoord;
         [self.container setObject:node forKey:identifer];
-        [node addChildNode:[self panel]];
+        [node addChildNode:[self panelWith:identifer]];
     }
 }
 
-- (SCNNode *)panel {
-    UIImage *image = [UIImage imageNamed:@"card.png"];
+
+
+- (SCNNode *)panelWith:(NSString*)str {
+     UIImage *image = [UIImage imageNamed:@"card.png"];
+    if ([str isEqualToString:@"MacBook"]) {
+        image = [UIImage imageNamed:@"cardMacbook.png"];
+    } else if ([str isEqualToString:@"METRO"]) {
+        image = [UIImage imageNamed:@"cardMetro.png"];
+    }
+   
     
     SCNMaterial *greenMaterial              = [SCNMaterial material];
     greenMaterial.diffuse.contents          = image;
@@ -325,6 +359,12 @@
     
     
     SCNBox *box = [SCNBox boxWithWidth:0.2 height:0.2 length:0.0005 chamferRadius:0];
+    
+    if ([str isEqualToString:@"MacBook"]) {
+        box = [SCNBox boxWithWidth:0.22 height:0.2 length:0.0005 chamferRadius:0];
+    } else if ([str isEqualToString:@"METRO"]) {
+        box = [SCNBox boxWithWidth:0.2 height:0.12 length:0.0005 chamferRadius:0];
+    }
     
     box.materials =  @[greenMaterial,  redMaterial,    blueMaterial,
                        yellowMaterial, purpleMaterial, magentaMaterial];
