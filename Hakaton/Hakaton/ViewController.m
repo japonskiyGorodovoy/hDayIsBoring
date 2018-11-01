@@ -35,6 +35,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *container;
 
+@property (nonatomic, strong) UIView *rectV;
+
 @end
 
     
@@ -42,6 +44,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.rectV = [UIView new];
+    [self.rectV setBackgroundColor:[UIColor colorWithRed:0 green:1 blue:0 alpha:0.3]];
+    [self.view addSubview:self.rectV];
     [self setupQuery];
     self.container = [NSMutableDictionary dictionary];
 //    self.session = [AVCaptureSession new];
@@ -94,6 +99,7 @@
             [self drawVisionRequestResults:resArray];
         });
     }];
+    objectRecognition.imageCropAndScaleOption = VNImageCropAndScaleOptionCenterCrop;
     self.requests = @[objectRecognition];
     return error;
 }
@@ -106,21 +112,48 @@
         
         
             self.latestPrediction = [[[observation labels] firstObject] identifier];
-        if (![self.container objectForKey:self.latestPrediction]) {
-            [self.container setObject:observation.uuid forKey:self.latestPrediction];
+        
+        CGFloat squard = 416.0;
+        
+        CGFloat offR = (MAX(self.bufferSize.width, self.bufferSize.height) - MIN(self.bufferSize.width, self.bufferSize.height))/2.0f;
+        
+        
+       
+        
             CGSize screenSize = [[UIScreen mainScreen] bounds].size;
             
             CGFloat scalefactor = MAX(screenSize.height/self.bufferSize.height, screenSize.width/self.bufferSize.width);
-            
-            CGFloat yOffset = ((self.bufferSize.height * scalefactor) - screenSize.height) / 2.0;
-            CGFloat xOffset = ((self.bufferSize.width * scalefactor) - screenSize.width) / 2.0f;
-            
-            CGRect objectBounds = VNImageRectForNormalizedRect(observation.boundingBox, self.bufferSize.width*scalefactor, self.bufferSize.height*scalefactor);
+        
+        CGFloat heightT = (squard * scalefactor);
+        CGFloat widthT = (squard * scalefactor);
+        
+        
+        
+
+        
+            CGFloat yOffset = (heightT - screenSize.height) / 2.0;
+            CGFloat xOffset = (widthT - screenSize.width) / 2.0f;
+        
+            CGFloat sideBuf = squard * scalefactor;
+        
+        
+        
+            CGRect objectBounds = VNImageRectForNormalizedRect(observation.boundingBox, sideBuf, sideBuf);
+         
+        
+            NSLog(@"%@\n%@\n%@\n",NSStringFromCGRect(objectBounds),NSStringFromCGSize(screenSize),NSStringFromCGSize(self.bufferSize));
             
             objectBounds.origin.x -= xOffset;
             objectBounds.origin.y -= yOffset;
+        
+        
+        
             
+        [self.rectV setFrame:objectBounds];
+           
             
+        if (![self.container objectForKey:self.latestPrediction]) {
+            [self.container setObject:observation.uuid forKey:self.latestPrediction];
             self.point = CGPointMake(objectBounds.origin.x + objectBounds.size.width /2.0f, objectBounds.origin.y + objectBounds.size.height / 2.0);
             
             [self handleTapGestureRecognize:nil];
@@ -212,24 +245,26 @@
     ///////////////////////////
     // Get Camera Image as RGB
     CVPixelBufferRef pixbuff = self.sceneView.session.currentFrame.capturedImage;
-    size_t width = CVPixelBufferGetWidth(pixbuff);
-    size_t height = CVPixelBufferGetHeight(pixbuff);
-    self.bufferSize = CGSizeMake(width, height);
+    CGFloat scale =  [[UIScreen mainScreen] scale];
+    size_t width = CVPixelBufferGetWidth(pixbuff)/scale;
+    size_t height = CVPixelBufferGetHeight(pixbuff)/scale;
+    self.bufferSize = CGSizeMake(height, width);
+    
     
     if (pixbuff == nil) { return; }
     CIImage *ciImage = [[CIImage alloc] initWithCVPixelBuffer:pixbuff];
+    CGSize centerSize = CGSizeMake(width/2.0, height/2.0);
+    CIImage *croppedCIImage = [ciImage imageByCroppingToRect:CGRectMake(-centerSize.width/2.0, -centerSize.height/2.0, centerSize.width, centerSize.height)];
+    
+    
     // Note: Not entirely sure if the ciImage is being interpreted as RGB, but for now it works with the Inception model.
     // Note2: Also uncertain if the pixelBuffer should be rotated before handing off to Vision (VNImageRequestHandler) - regardless, for now, it still works well with the Inception model.
     
     ///////////////////////////
     // Prepare CoreML/Vision Request
     VNImageRequestHandler *imageRequestHandler = [[VNImageRequestHandler alloc] initWithCIImage:ciImage orientation:[self exifOrientationFromDeviceOrientation] options:@{}];
-    // let imageRequestHandler = VNImageRequestHandler(cgImage: cgImage!, orientation: myOrientation, options: [:]) // Alternatively; we can convert the above to an RGB CGImage and use that. Also UIInterfaceOrientation can inform orientation values.
     
-    ///////////////////////////
-    // Run Image Request
     [imageRequestHandler performRequests:self.requests error:nil];
-    
 }
 
 
