@@ -10,7 +10,6 @@
 #import <Vision/Vision.h>
 #import <CoreML/CoreML.h>
 #import "ObjectDetector.h"
-#import <CoreLocation/CoreLocation.h>
 
 @interface ViewController () <ARSCNViewDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, ARSessionDelegate>
 
@@ -279,17 +278,34 @@
     }
 }
 
-#pragma mark - Maps
+#pragma mark - Private
 
-- (void)showMapsWithLatitude:(double)latitude longitude:(double)longitude {
-    NSString *URLString = [NSString stringWithFormat:@"http://maps.apple.com/?daddr=%f,%f&dirflg=d", latitude, longitude];
+- (void)openURLString:(NSString *)URLString {
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:URLString] options:@{} completionHandler:^(BOOL success) {
         
     }];
 }
 
+#pragma mark - Maps
+
+- (void)showMapsWithLatitude:(double)latitude longitude:(double)longitude {
+    NSString *URLString = [NSString stringWithFormat:@"http://maps.apple.com/?daddr=%f,%f&dirflg=d", latitude, longitude];
+    [self openURLString:URLString];
+}
+
 - (void)showMapsWithTestCoordinates {
     [self showMapsWithLatitude:55.744783 longitude:37.565995];
+}
+
+#pragma mark - Safari
+
+- (void)showSafariWithSearchString:(NSString *)searchString {
+    NSString *URLString = [NSString stringWithFormat:@"https://beru.ru/search?cvredirect=2&text=%@", [searchString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+    [self openURLString:URLString];
+}
+
+- (void)showSafariWithTestSearchString {
+    [self showSafariWithSearchString:@"macbook pro 2016"];
 }
 
 @end
