@@ -107,7 +107,6 @@
     for (VNRecognizedObjectObservation *observation in results) {
         NSString *latestPrediction = [[[observation labels] firstObject] identifier];
         if (![self.container objectForKey:latestPrediction]) {
-            [self.container setObject:observation.uuid forKey:latestPrediction];
             CGFloat squard = 416.0;
             CGSize screenSize = [[UIScreen mainScreen] bounds].size;
             CGFloat scalefactor = MAX(screenSize.height/self.bufferSize.height, screenSize.width/self.bufferSize.width);
@@ -279,10 +278,14 @@
         SCNNode *node = [self createNewBubbleParentNode:identifer];
         [self.sceneView.scene.rootNode addChildNode:node];
         node.position = worldCoord;
+        [self.container setObject:node forKey:identifer];
     }
 }
 
 - (IBAction)resetAllDetection:(id)sender{
+    [self.container enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, SCNNode *obj, BOOL * _Nonnull stop) {
+        [obj removeFromParentNode];
+    }];
     [self.container removeAllObjects];
 }
 
