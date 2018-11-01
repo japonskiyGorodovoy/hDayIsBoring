@@ -70,6 +70,7 @@
 
     // Run the view's session
     [self.sceneView.session runWithConfiguration:configuration];
+    [self loopCoreMLUpdate];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -106,7 +107,10 @@
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
     self.detectionOverlay.sublayers = nil;
     for (VNRecognizedObjectObservation *observation in results) {
-        CGRect objectBounds = VNImageRectForNormalizedRect(observation.boundingBox, self.bufferSize.width, self.bufferSize.height);
+        CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+        
+        CGRect objectBounds = VNImageRectForNormalizedRect(observation.boundingBox, screenSize.width, screenSize.height);
+    
         NSLog(@"%@",NSStringFromCGRect(objectBounds));
     }
     [CATransaction commit];
@@ -190,6 +194,7 @@
     ///////////////////////////
     // Get Camera Image as RGB
     CVPixelBufferRef pixbuff = self.sceneView.session.currentFrame.capturedImage;
+    
     if (pixbuff == nil) { return; }
     CIImage *ciImage = [[CIImage alloc] initWithCVPixelBuffer:pixbuff];
     // Note: Not entirely sure if the ciImage is being interpreted as RGB, but for now it works with the Inception model.
@@ -268,8 +273,8 @@
         SCNVector3 worldCoord = SCNVector3Make(transform.columns[3].x, transform.columns[3].y, transform.columns[3].z);
         
         // Create 3D Text
-        SCNNode *node = [self createNewBubbleParentNode:latestPrediction];
-        [sceneView.scene.rootNode addChildNode:node];
+        SCNNode *node = [self createNewBubbleParentNode:self.latestPrediction];
+        [self.sceneView.scene.rootNode addChildNode:node];
         node.position = worldCoord;
     }
 }
