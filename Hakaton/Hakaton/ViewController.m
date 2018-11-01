@@ -177,4 +177,101 @@
     }
 }
 
+- (void)loopCoreMLUpdate {
+    // Continuously run CoreML whenever it's ready. (Preventing 'hiccups' in Frame Rate)
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateCoreML];
+        [self loopCoreMLUpdate];
+    });
+}
+
+- (void)updateCoreML {
+    ///////////////////////////
+    // Get Camera Image as RGB
+    CVPixelBufferRef pixbuff = self.sceneView.session.currentFrame.capturedImage;
+    if (pixbuff == nil) { return; }
+    CIImage *ciImage = [[CIImage alloc] initWithCVPixelBuffer:pixbuff];
+    // Note: Not entirely sure if the ciImage is being interpreted as RGB, but for now it works with the Inception model.
+    // Note2: Also uncertain if the pixelBuffer should be rotated before handing off to Vision (VNImageRequestHandler) - regardless, for now, it still works well with the Inception model.
+    
+    ///////////////////////////
+    // Prepare CoreML/Vision Request
+    VNImageRequestHandler *imageRequestHandler = [[VNImageRequestHandler alloc] initWithCIImage:ciImage orientation:[self exifOrientationFromDeviceOrientation] options:@{}];
+    // let imageRequestHandler = VNImageRequestHandler(cgImage: cgImage!, orientation: myOrientation, options: [:]) // Alternatively; we can convert the above to an RGB CGImage and use that. Also UIInterfaceOrientation can inform orientation values.
+    
+    ///////////////////////////
+    // Run Image Request
+    [imageRequestHandler performRequests:self.requests error:nil];
+    
+}
+
+
+- (SCNNode *)createNewBubbleParentNode:(NSString *)text {
+    // Warning: Creating 3D Text is susceptible to crashing. To reduce chances of crashing; reduce number of polygons, letters, smoothness, etc.
+    
+    // TEXT BILLBOARD CONSTRAINT
+    SCNBillboardConstraint *billboardConstraint = [SCNBillboardConstraint billboardConstraint];
+    billboardConstraint.freeAxes = SCNBillboardAxisY;
+    
+    // BUBBLE-TEXT
+    SCNText *bubble = [SCNText textWithString:text extrusionDepth:self.bubbleDepth];
+    UIFont *font = [UIFont fontWithName:@"Futura" size:0.15];
+    //font = font?.withTraits(traits: .traitBold);
+    bubble.font = font;
+    bubble.alignmentMode = kCAAlignmentCenter;
+    bubble.firstMaterial.diffuse.contents = UIColor.orangeColor;
+    bubble.firstMaterial.specular.contents = UIColor.whiteColor;
+    bubble.firstMaterial.doubleSided = YES;
+    // bubble.flatness // setting this too low can cause crashes.
+    bubble.chamferRadius = self.bubbleDepth;
+    
+    // BUBBLE NODE
+    //let (minBound, maxBound) = bubble.boundingBox
+    
+    SCNNode *bubbleNode = [SCNNode nodeWithGeometry:bubble];
+    
+    SCNVector3 minBounds;
+    SCNVector3 maxBounds;
+    [bubble getBoundingBoxMin:&minBounds max:&maxBounds];
+    // Centre Node - to Centre-Bottom point
+    bubbleNode.pivot = SCNMatrix4MakeTranslation( (maxBounds.x - minBounds.x)/2, minBounds.y, self.bubbleDepth/2);
+    // Reduce default text size
+    bubbleNode.scale = SCNVector3Make(0.2, 0.2, 0.2);
+    
+    // CENTRE POINT NODE
+    SCNSphere *sphere = [SCNSphere sphereWithRadius:0.005];
+    sphere.firstMaterial.diffuse.contents = UIColor.cyanColor;
+    SCNNode *sphereNode = [SCNNode nodeWithGeometry:sphere];
+    
+    // BUBBLE PARENT NODE
+    SCNNode *bubbleNodeParent = [SCNNode node];
+    [bubbleNodeParent addChildNode:bubbleNode];
+    [bubbleNodeParent addChildNode:sphereNode];
+    bubbleNodeParent.constraints = @[billboardConstraint];
+    
+    return bubbleNodeParent;
+}
+
+
+- (void)handleTapGestureRecognize:(UITapGestureRecognizer *)gestureRecognize {
+    // HIT TEST : REAL WORLD
+    // Get Screen Centre
+    //let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
+    CGPoint screenCentre = self.point;
+    NSArray <ARHitTestResult *> *arHitTestResults = [self.sceneView hitTest:screenCentre types:ARHitTestResultTypeFeaturePoint];
+    
+    ARHitTestResult *closestResult = arHitTestResults.firstObject;
+    if (closestResult != nil)  {
+        // Get Coordinates of HitTest
+        matrix_float4x4 transform = closestResult.worldTransform;
+        SCNVector3 worldCoord = SCNVector3Make(transform.columns[3].x, transform.columns[3].y, transform.columns[3].z);
+        
+        // Create 3D Text
+        SCNNode *node = [self createNewBubbleParentNode:latestPrediction];
+        [sceneView.scene.rootNode addChildNode:node];
+        node.position = worldCoord;
+    }
+}
+
 @end
