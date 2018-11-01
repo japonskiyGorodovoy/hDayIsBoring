@@ -340,15 +340,17 @@
 			baseConfigurationReference = DA7BA0DF4B1DBF5D7CF487E1 /* Pods-Hakaton.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = B5MHTW4TA8;
+				DEVELOPMENT_TEAM = NTRD7U985S;
 				INFOPLIST_FILE = Hakaton/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = ru.sberbank.Football.Hakaton;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zvonaryov.hakaton;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -358,15 +360,17 @@
 			baseConfigurationReference = E0136CFD557251B3E3546524 /* Pods-Hakaton.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = B5MHTW4TA8;
+				DEVELOPMENT_TEAM = NTRD7U985S;
 				INFOPLIST_FILE = Hakaton/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = ru.sberbank.Football.Hakaton;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zvonaryov.hakaton;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import <AVKit/AVKit.h>
 
 @interface AppDelegate ()
 
@@ -17,7 +18,25 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    switch ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]) {
+        case AVAuthorizationStatusNotDetermined:
+            [self requestPermission];
+            break;
+            
+        default:
+            break;
+    }
+    
+    
+    
     return YES;
+}
+
+- (void)requestPermission {
+    [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+        NSLog(@"cool");
+    }];
 }
 
 

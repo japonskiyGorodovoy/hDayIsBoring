@@ -12,7 +12,7 @@
 #import "ObjectDetector.h"
 
 
-@interface ViewController () <ARSCNViewDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
+@interface ViewController () <ARSCNViewDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, ARSessionDelegate>
 
 @property (nonatomic, strong) IBOutlet ARSCNView *sceneView;
 
@@ -38,8 +38,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupQuery];
-    self.session = [AVCaptureSession new];
-    self.videoDataOutput = [AVCaptureVideoDataOutput new];
+//    self.session = [AVCaptureSession new];
+//    self.videoDataOutput = [AVCaptureVideoDataOutput new];
     
     
     // Set the view's delegate
@@ -53,7 +53,7 @@
     
     // Set the scene to the view
     self.sceneView.scene = scene;
-    [self setupAVCapture];
+   [self setupAVCapture];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -168,6 +168,7 @@
     for (VNRecognizedObjectObservation *observation in results) {
         VNClassificationObservation *topLabelObservation = observation.labels[0];
         CGRect objectBounds = VNImageRectForNormalizedRect(observation.boundingBox, self.bufferSize.width, self.bufferSize.height);
+        NSLog(@"%@",NSStringFromCGRect(objectBounds));
         CALayer *shapeLayer = [self createRoundedRectLayerWithBounds:objectBounds];
         CATextLayer *textLayer = [self createTextSubLayerInBounds:objectBounds identifier:topLabelObservation.identifier confidence:topLabelObservation.confidence];
         [shapeLayer addSublayer:textLayer];
@@ -287,16 +288,19 @@
 
 #pragma mark - ARSCNViewDelegate
 
-/*
-// Override to create and configure nodes for anchors added to the view's session.
+
 - (SCNNode *)renderer:(id<SCNSceneRenderer>)renderer nodeForAnchor:(ARAnchor *)anchor {
+    
     SCNNode *node = [SCNNode new];
  
-    // Add geometry to the node...
+    
  
     return node;
 }
-*/
+
+- (void)session:(ARSession *)session cameraDidChangeTrackingState:(ARCamera *)camera {
+    session.delegate = self;
+}
 
 - (void)session:(ARSession *)session didFailWithError:(NSError *)error {
     // Present an error message to the user
@@ -311,6 +315,16 @@
 - (void)sessionInterruptionEnded:(ARSession *)session {
     // Reset tracking and/or remove existing anchors if consistent tracking is required
     
+}
+
+#pragma mark - ARSessionDelegate
+
+
+- (void)session:(ARSession *)session didUpdateFrame:(ARFrame *)frame {
+    CVImageBufferRef pixelBuffer = frame.capturedImage;
+    CGImagePropertyOrientation exifOrientation = [self exifOrientationFromDeviceOrientation];
+    VNImageRequestHandler *imageRequestHandler = [[VNImageRequestHandler alloc] initWithCVPixelBuffer:pixelBuffer orientation:exifOrientation options:@{}];
+    [imageRequestHandler performRequests:self.requests error:nil];
 }
 
 @end
