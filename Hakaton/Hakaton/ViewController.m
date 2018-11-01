@@ -107,7 +107,6 @@
         
             self.latestPrediction = [[[observation labels] firstObject] identifier];
         if (![self.container objectForKey:self.latestPrediction]) {
-            [self.container setObject:observation.uuid forKey:self.latestPrediction];
             CGSize screenSize = [[UIScreen mainScreen] bounds].size;
             
             CGFloat scalefactor = MAX(screenSize.height/self.bufferSize.height, screenSize.width/self.bufferSize.width);
@@ -124,6 +123,7 @@
             self.point = CGPointMake(objectBounds.origin.x + objectBounds.size.width /2.0f, objectBounds.origin.y + objectBounds.size.height / 2.0);
             
             [self handleTapGestureRecognize:nil];
+            [self.container setObject:observation.uuid forKey:self.latestPrediction];
         } else {
             
         }
@@ -276,6 +276,21 @@
     [bubbleNodeParent addChildNode:sphereNode];
     bubbleNodeParent.constraints = @[billboardConstraint];
     
+    
+//    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
+//    view.backgroundColor = UIColor.redColor;
+//    SCNPlane *plane = [SCNPlane new];
+//    plane.firstMaterial.diffuse.contents = view;
+//    plane.width = 0.1;
+//    plane.height = 0.1;
+//
+//
+//    SCNNode *planeNode = [SCNNode node];
+//    planeNode.position = SCNVector3Make(0, 0.1, 0);
+//    planeNode.geometry = plane;
+    
+    [bubbleNodeParent addChildNode:[self panel]];
+    
     return bubbleNodeParent;
 }
 
@@ -297,6 +312,46 @@
         [self.sceneView.scene.rootNode addChildNode:node];
         node.position = worldCoord;
     }
+}
+
+- (SCNNode *)panel {
+    UIImage *image = [UIImage imageNamed:@"card.png"];
+    
+    SCNMaterial *greenMaterial              = [SCNMaterial material];
+    greenMaterial.diffuse.contents          = image;
+    greenMaterial.locksAmbientWithDiffuse   = YES;
+    
+    SCNMaterial *redMaterial                = [SCNMaterial material];
+    redMaterial.diffuse.contents            = [UIColor redColor];
+    redMaterial.locksAmbientWithDiffuse     = YES;
+    
+    SCNMaterial *blueMaterial               = [SCNMaterial material];
+    blueMaterial.diffuse.contents           = [UIColor blueColor];
+    blueMaterial.locksAmbientWithDiffuse    = YES;
+    
+    SCNMaterial *yellowMaterial             = [SCNMaterial material];
+    yellowMaterial.diffuse.contents         = [UIColor yellowColor];
+    yellowMaterial.locksAmbientWithDiffuse  = YES;
+    
+    SCNMaterial *purpleMaterial             = [SCNMaterial material];
+    purpleMaterial.diffuse.contents         = [UIColor purpleColor];
+    purpleMaterial.locksAmbientWithDiffuse  = YES;
+    
+    SCNMaterial *magentaMaterial            = [SCNMaterial material];
+    magentaMaterial.diffuse.contents        = [UIColor magentaColor];
+    magentaMaterial.locksAmbientWithDiffuse = YES;
+    
+    
+    SCNBox *box = [SCNBox boxWithWidth:0.1 height:0.1 length:0.0005 chamferRadius:0];
+    
+    box.materials =  @[greenMaterial,  redMaterial,    blueMaterial,
+                       yellowMaterial, purpleMaterial, magentaMaterial];
+    
+    SCNNode *node = [SCNNode node];
+    node.position = SCNVector3Make(0, 0.1, 0);
+    node.geometry = box;
+    
+    return node;
 }
 
 @end
