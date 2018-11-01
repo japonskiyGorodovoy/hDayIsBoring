@@ -33,7 +33,7 @@
 
 @property (nonatomic, strong) NSMutableDictionary *container;
 
-@property (nonatomic, strong) UIView *rectV;
+
 
 @end
 
@@ -42,9 +42,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.rectV = [UIView new];
-    [self.rectV setBackgroundColor:[UIColor colorWithRed:0 green:1 blue:0 alpha:0.3]];
-    [self.view addSubview:self.rectV];
     [self setupQuery];
     self.container = [NSMutableDictionary dictionary];
 //    self.session = [AVCaptureSession new];
@@ -120,7 +117,6 @@
             CGRect objectBounds = VNImageRectForNormalizedRect(observation.boundingBox, sideBuf, sideBuf);
             objectBounds.origin.x -= xOffset;
             objectBounds.origin.y -= yOffset;
-            [self.rectV setFrame:objectBounds];
            
             
         
@@ -163,12 +159,7 @@
 
 - (void)session:(ARSession *)session didUpdateFrame:(ARFrame *)frame {
     
-    if (self.frameCounter == 60 || self.frameCounter == 0) {
-        [self pixelBufferFromFrame:frame];
-        self.frameCounter = 1;
-    } else {
-        self.frameCounter++;
-    }
+    
 }
 
 - (void)pixelBufferFromFrame:(ARFrame *)frame {
@@ -193,6 +184,8 @@
 }
 
 - (void)updateCoreML {
+    if (self.frameCounter == 20 || self.frameCounter == 0) {
+    
     ///////////////////////////
     // Get Camera Image as RGB
     CVPixelBufferRef pixbuff = self.sceneView.session.currentFrame.capturedImage;
@@ -213,6 +206,10 @@
     VNImageRequestHandler *imageRequestHandler = [[VNImageRequestHandler alloc] initWithCIImage:ciImage orientation:[self exifOrientationFromDeviceOrientation] options:@{}];
     
     [imageRequestHandler performRequests:self.requests error:nil];
+        self.frameCounter = 1;
+    } else {
+        self.frameCounter++;
+    }
 }
 
 
@@ -327,7 +324,7 @@
     magentaMaterial.locksAmbientWithDiffuse = YES;
     
     
-    SCNBox *box = [SCNBox boxWithWidth:0.1 height:0.1 length:0.0005 chamferRadius:0];
+    SCNBox *box = [SCNBox boxWithWidth:0.2 height:0.2 length:0.0005 chamferRadius:0];
     
     box.materials =  @[greenMaterial,  redMaterial,    blueMaterial,
                        yellowMaterial, purpleMaterial, magentaMaterial];
