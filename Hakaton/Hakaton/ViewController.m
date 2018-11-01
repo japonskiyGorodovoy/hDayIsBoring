@@ -30,8 +30,6 @@
 
 @property (nonatomic, assign) int frameCounter;
 @property (nonatomic, assign) CGFloat bubbleDepth; // the 'depth' of 3D text
-@property (nonatomic, copy) NSString *latestPrediction;// a variable containing the latest CoreML prediction
-@property (nonatomic, assign) CGPoint point;
 
 @property (nonatomic, strong) NSMutableDictionary *container;
 
@@ -53,8 +51,6 @@
 //    self.videoDataOutput = [AVCaptureVideoDataOutput new];
     
     self.bubbleDepth = 0.01;
-    self.latestPrediction = @"…";
-    self.point = CGPointZero;
     // Set the view's delegate
     self.sceneView.delegate = self;
     
@@ -109,54 +105,28 @@
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
     self.detectionOverlay.sublayers = nil;
     for (VNRecognizedObjectObservation *observation in results) {
-        
-        
-            self.latestPrediction = [[[observation labels] firstObject] identifier];
-        
-        CGFloat squard = 416.0;
-        
-        CGFloat offR = (MAX(self.bufferSize.width, self.bufferSize.height) - MIN(self.bufferSize.width, self.bufferSize.height))/2.0f;
-        
-        
-       
-        
+        NSString *latestPrediction = [[[observation labels] firstObject] identifier];
+        if (![self.container objectForKey:latestPrediction]) {
+            [self.container setObject:observation.uuid forKey:latestPrediction];
+            CGFloat squard = 416.0;
             CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-            
             CGFloat scalefactor = MAX(screenSize.height/self.bufferSize.height, screenSize.width/self.bufferSize.width);
-        
-        CGFloat heightT = (squard * scalefactor);
-        CGFloat widthT = (squard * scalefactor);
-        
-        
-        
-
-        
+            CGFloat heightT = (squard * scalefactor);
+            CGFloat widthT = (squard * scalefactor);
             CGFloat yOffset = (heightT - screenSize.height) / 2.0;
             CGFloat xOffset = (widthT - screenSize.width) / 2.0f;
         
             CGFloat sideBuf = squard * scalefactor;
-        
-        
-        
             CGRect objectBounds = VNImageRectForNormalizedRect(observation.boundingBox, sideBuf, sideBuf);
-         
-        
-            NSLog(@"%@\n%@\n%@\n",NSStringFromCGRect(objectBounds),NSStringFromCGSize(screenSize),NSStringFromCGSize(self.bufferSize));
-            
             objectBounds.origin.x -= xOffset;
             objectBounds.origin.y -= yOffset;
-        
-        
-        
-            
-        [self.rectV setFrame:objectBounds];
+            [self.rectV setFrame:objectBounds];
            
             
-        if (![self.container objectForKey:self.latestPrediction]) {
-            [self.container setObject:observation.uuid forKey:self.latestPrediction];
-            self.point = CGPointMake(objectBounds.origin.x + objectBounds.size.width /2.0f, objectBounds.origin.y + objectBounds.size.height / 2.0);
+        
+            CGPoint centerPoint = CGPointMake(objectBounds.origin.x + objectBounds.size.width /2.0f, objectBounds.origin.y + objectBounds.size.height / 2.0);
             
-            [self handleTapGestureRecognize:nil];
+            [self createViewWithCenter:centerPoint identifer:latestPrediction];
         } else {
             
         }
@@ -213,25 +183,6 @@
     NSLog(@"pixelBufferFromFrame");
 }
 
-
-- (void)classificationCompleteHandler:(VNRequest *)request {
-    
-    VNRecognizedObjectObservation *result = request.results.firstObject;
-    NSString *str = [result.labels.firstObject identifier];
-    
-    if (str != nil) {
-       
-        dispatch_async(dispatch_get_main_queue(), ^{
-            CGFloat sst = MIN([UIScreen mainScreen].bounds.size.width,  [UIScreen mainScreen].bounds.size.height);
-            CGFloat ssv = MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-            CGRect objectBounds = VNImageRectForNormalizedRect(result.boundingBox, sst, ssv);
-            objectBounds.origin.y += fabs(sst-ssv);
-            self.point = CGPointMake(objectBounds.origin.x + (objectBounds.size.width / 2.0), objectBounds.origin.y + (objectBounds.size.height / 2.0));
-            self.latestPrediction = str;
-        });
-    }
-}
-
 - (void)loopCoreMLUpdate {
     // Continuously run CoreML whenever it's ready. (Preventing 'hiccups' in Frame Rate)
     
@@ -253,10 +204,7 @@
     
     if (pixbuff == nil) { return; }
     CIImage *ciImage = [[CIImage alloc] initWithCVPixelBuffer:pixbuff];
-    CGSize centerSize = CGSizeMake(width/2.0, height/2.0);
-    CIImage *croppedCIImage = [ciImage imageByCroppingToRect:CGRectMake(-centerSize.width/2.0, -centerSize.height/2.0, centerSize.width, centerSize.height)];
-    
-    
+
     // Note: Not entirely sure if the ciImage is being interpreted as RGB, but for now it works with the Inception model.
     // Note2: Also uncertain if the pixelBuffer should be rotated before handing off to Vision (VNImageRequestHandler) - regardless, for now, it still works well with the Inception model.
     
@@ -314,11 +262,11 @@
     return bubbleNodeParent;
 }
 
-- (void)handleTapGestureRecognize:(UITapGestureRecognizer *)gestureRecognize {
+- (void)createViewWithCenter:(CGPoint)center identifer:(NSString*)identifer {
     // HIT TEST : REAL WORLD
     // Get Screen Centre
     //let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
-    CGPoint screenCentre = self.point;
+    CGPoint screenCentre = center;
     NSArray <ARHitTestResult *> *arHitTestResults = [self.sceneView hitTest:screenCentre types:ARHitTestResultTypeFeaturePoint];
     
     ARHitTestResult *closestResult = arHitTestResults.firstObject;
@@ -328,10 +276,14 @@
         SCNVector3 worldCoord = SCNVector3Make(transform.columns[3].x, transform.columns[3].y, transform.columns[3].z);
         
         // Create 3D Text
-        SCNNode *node = [self createNewBubbleParentNode:self.latestPrediction];
+        SCNNode *node = [self createNewBubbleParentNode:identifer];
         [self.sceneView.scene.rootNode addChildNode:node];
         node.position = worldCoord;
     }
+}
+
+- (IBAction)resetAllDetection:(id)sender{
+    [self.container removeAllObjects];
 }
 
 @end
