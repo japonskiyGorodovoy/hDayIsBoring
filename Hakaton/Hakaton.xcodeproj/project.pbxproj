@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		231D4150A3EB9021F2018120 /* libPods-Hakaton.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D6DA1B06094E6B633CA8EBB /* libPods-Hakaton.a */; };
 		784DBAB6218B3AF000AFFCC4 /* ObjectDetector.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 784DBAB5218B3AF000AFFCC4 /* ObjectDetector.mlmodel */; };
+		784DBABA218B720900AFFCC4 /* card@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 784DBAB7218B720900AFFCC4 /* card@3x.png */; };
+		784DBABB218B720900AFFCC4 /* card@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 784DBAB8218B720900AFFCC4 /* card@2x.png */; };
+		784DBABC218B720900AFFCC4 /* card.png in Resources */ = {isa = PBXBuildFile; fileRef = 784DBAB9218B720900AFFCC4 /* card.png */; };
 		B293EEBC2189C3E800318563 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B293EEBB2189C3E800318563 /* AppDelegate.m */; };
 		B293EEBE2189C3E800318563 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = B293EEBD2189C3E800318563 /* art.scnassets */; };
 		B293EEC12189C3E800318563 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B293EEC02189C3E800318563 /* ViewController.m */; };
@@ -21,6 +24,9 @@
 /* Begin PBXFileReference section */
 		5D6DA1B06094E6B633CA8EBB /* libPods-Hakaton.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Hakaton.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		784DBAB5218B3AF000AFFCC4 /* ObjectDetector.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = ObjectDetector.mlmodel; sourceTree = "<group>"; };
+		784DBAB7218B720900AFFCC4 /* card@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card@3x.png"; sourceTree = "<group>"; };
+		784DBAB8218B720900AFFCC4 /* card@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card@2x.png"; sourceTree = "<group>"; };
+		784DBAB9218B720900AFFCC4 /* card.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card.png; sourceTree = "<group>"; };
 		B293EEB72189C3E800318563 /* Hakaton.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hakaton.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B293EEBA2189C3E800318563 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B293EEBB2189C3E800318563 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -69,6 +75,9 @@
 			isa = PBXGroup;
 			children = (
 				784DBAB5218B3AF000AFFCC4 /* ObjectDetector.mlmodel */,
+				784DBAB9218B720900AFFCC4 /* card.png */,
+				784DBAB8218B720900AFFCC4 /* card@2x.png */,
+				784DBAB7218B720900AFFCC4 /* card@3x.png */,
 				B293EEB92189C3E800318563 /* Hakaton */,
 				B293EEB82189C3E800318563 /* Products */,
 				45B5FF26CFDD3A96C160D99F /* Pods */,
@@ -161,8 +170,11 @@
 			files = (
 				B293EEBE2189C3E800318563 /* art.scnassets in Resources */,
 				B293EEC92189C3EB00318563 /* LaunchScreen.storyboard in Resources */,
+				784DBABB218B720900AFFCC4 /* card@2x.png in Resources */,
 				B293EEC62189C3EB00318563 /* Assets.xcassets in Resources */,
+				784DBABA218B720900AFFCC4 /* card@3x.png in Resources */,
 				B293EEC42189C3E800318563 /* Main.storyboard in Resources */,
+				784DBABC218B720900AFFCC4 /* card.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,13 +354,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = NTRD7U985S;
+				DEVELOPMENT_TEAM = 5DKYS885U3;
 				INFOPLIST_FILE = Hakaton/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sberbank.hakaton;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sberbank11.hakaton;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -362,13 +374,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = NTRD7U985S;
+				DEVELOPMENT_TEAM = 5DKYS885U3;
 				INFOPLIST_FILE = Hakaton/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sberbank.hakaton;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sberbank11.hakaton;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
